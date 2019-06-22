@@ -1,5 +1,5 @@
 function checkTheText(){
-  bannedWords = ['was', 'would', 'is', 'be', 'being', 'are', 'have', 'can', 'do', 'could', 'should'];
+  bannedWords = ['was', 'would', 'is', 'be', 'being', 'are', 'have', 'has', 'had' , 'can', 'do', 'could', 'should'];
   wrongFlag = false;
   console.log("Essay:")
   text = document.getElementById("essay").textContent;
