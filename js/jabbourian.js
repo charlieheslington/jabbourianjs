@@ -13,7 +13,7 @@ function checkTheText(){
       newText = newText + "<div class='red'> " + words[word] + " </div>";
     }
     else{
-      newText = newText + " " + words[word] + " ";
+      newText = newText + " " + words[word];
     }
   }
   document.getElementById("essay").innerHTML = newText;
