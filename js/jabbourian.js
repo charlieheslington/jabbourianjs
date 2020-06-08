@@ -18,13 +18,13 @@ function checkEssay(text){
         if(textArray[i].match(/ly$/)){
             lyArray[i] = true;
         }
-        if(textArray[i].match(/ing$/)){
+        else if(textArray[i].match(/ing$/)){
             ingArray[i] = true;
         }
-        if(textArray[i] == "'"){
+        else if(textArray[i] == "'"){
             appostArray[i] = true;
         }
-        if(textArray[i] ==  "."){
+        else if(textArray[i] ==  "."){
             if(["about", "by", "during", "except", "from", "in", "into", "like", "minus", "near","of", "off", "on", "onto", "over", "past", "since", "than", "to", "under", "until", "upon", "with", "without"].indexOf(textArray[i-1]) > -1){
                 endPrepositionArray[i-1] = true;
                 console.log("Broken rule at word: " + textArray[i-1]);
@@ -34,13 +34,13 @@ function checkEssay(text){
                 console.log("Broken rule at word: " + textArray[i-1]);
             };
         }
-        if(["always", "never", "any", "every", "all", "none"].indexOf(textArray[i]) > -1){
+        else if(["always", "never", "any", "every", "all", "none"].indexOf(textArray[i]) > -1){
             avoidSweepingArray[i] = true;
-        };
-        if(["be", "have", "can", "do"].indexOf(textArray[i]) > -1){
+        }
+        else if(["be", "have", "can", "do"].indexOf(textArray[i]) > -1){
             weakVerbArray[i] = true;
-        };
-        if(["could", "would", "should"].indexOf(textArray[i]) > -1){
+        }
+        else if(["could", "would", "should"].indexOf(textArray[i]) > -1){
             cwsArray[i] = true;
         };
         
