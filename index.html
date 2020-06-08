@@ -1,24 +1,39 @@
-<!DOCTYPE HTML>
 <html>
   <head>
-    <title>
-    Jabbourian.JS
-    </title>
-    <link rel="stylesheet" href="css/style.css" />
+    <title>Jabbourian.JS</title>
+    <link rel="stylesheet" href="css/app.css"/>
   </head>
   <body>
-    <div class="wrap">
-      <div class="top-bar">
-        <h1> Jabbourian.JS </h1>
-        <div class="sub-title">The Oxford English Dictionary - now with 90% less words </div>
+    <div class="container" id="start">
+      <div class="row justify-content-center">
+        <div class="col-md-8">
+          <div class="card">
+            <div class="card-header">Jabbourian.JS</div>                        
+            <div class="card-body">
+              <blockquote class="blockquote">
+                <p class="mb-0">"I don't care if the computer dies, I care if the computer lies."</p>  
+                <footer class="blockquote-footer">Dr Jabbour</footer>
+              </blockquote>
+              <p>Paste sections of text the text area below:</p>
+              <textarea id="essay" class="form-control"></textarea>
+              <p><button class="btn btn-primary" onclick="checkEssay(document.getElementById('essay').value)">Analyse</button></p>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="page-content">
-        <div class="writing-area"  id="essay" spellcheck="true" contenteditable>Type essay here for check<strike>ing</strike> you must. On the doctor you must click</div>
-      </div>
-  </div>
-  <div onclick="checkTheText()" class="jabbour">
-      <img id="jabbour" src="img/jabbour.png" class="button" width="220" height="300" />
-  </div>
-  <script src="js/jabbourian.js"></script>
+    </div>
+    <div class="container" style="display: none;" id="end">
+        <div class="row justify-content-center">
+          <div class="col-md-8">
+            <div class="card">
+              <div class="card-header">Jabbourian.JS Result</div>                        
+              <div class="card-body" id="result">
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+    <div class= "alert alert-danger" id="violation" style="position: absolute; top:20px; right:20px; display: none;">Hello</div>
+    <script src="js/Jabbourian.js"></script>
   </body>
 </html>
