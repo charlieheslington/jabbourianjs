@@ -34,4 +34,4 @@ Project is: _in progress_
 Writing big long essays and realising there could be a systematic solution to my pain.
 
 ## Contact
-Created by [@charlieheslington](charlie.hesli@gmail.com) - feel free to contact me!
+Created by [@charlieheslington](https://github.com/charlieheslington) - charlie.hesli@gmail.com - feel free to contact me!
