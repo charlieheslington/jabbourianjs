@@ -3,7 +3,7 @@
 ## General info
 Checks sections of writing against rules from the ACE writing guide. Please excuse this readme's Jabbourian.
 
-This checker currently checks text against 8 rules from the ACE Writing Guide.
+This checker currently checks text against 8 rules and 2 warnings from the ACE Writing Guide.
 
 ## Technologies
 * JavaScript
@@ -26,6 +26,8 @@ This checker checks against the following rules of the ACE Writing Guide
 * Avoid statements with sweeping categorical adverbs like 'always', 'never', 'any', 'every', 'all' and 'none'.They may undermine the credibility of an entire report if a reader can disprove one of them
 * Avoid weak verbs 'be', 'have', 'can, or 'do'. Use verbs that describestate and action
 * Do not use 'could', 'would', or 'should' .Use 'must' or 'shall' to describe a requirement
+* Note that 'no' equals zero, and that zero is singular. 'No computer left behind' is correct. 'No computers left behind' is incorrect
+* Use quantitative adverbs like 'few', 'some', 'many',and 'most' with care. They refer to plurality any way you count them. 'Most' equals at least 50 percent
 
 ## Status
 Project is: _in progress_
