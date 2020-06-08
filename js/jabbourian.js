@@ -14,6 +14,8 @@ function checkEssay(text){
     avoidSweepingArray = new Array();
     weakVerbArray = new Array();
     cwsArray = new Array();
+    noArray = new Array();
+    quantArray = new Array();
     for(var i = 0; i < textArray.length; i++){
         if(textArray[i].match(/ly$/)){
             lyArray[i] = true;
@@ -42,7 +44,13 @@ function checkEssay(text){
         }
         else if(["could", "would", "should"].indexOf(textArray[i]) > -1){
             cwsArray[i] = true;
-        };
+        }
+        else if(["no"].indexOf(textArray[i]) > -1){
+            noArray[i] = true;
+        }
+        else if(["few", "some", "many", "most"].indexOf(textArray[i]) > -1){
+            quantArray[i] = true;
+        }
         
     }
     resultOutput = "";
@@ -70,6 +78,12 @@ function checkEssay(text){
         }
         else if(cwsArray[i] == true){
             resultOutput = resultOutput + "<span style=\"text-decoration: blue wavy underline;\" onmouseover=\"showWarning(8)\">" + textArray[i] + "</span>";
+        }
+        else if(noArray[i] == true){
+            resultOutput = resultOutput + "<span style=\"text-decoration: green wavy underline;\" onmouseover=\"showWarning(9)\">" + textArray[i] + "</span>";
+        }
+        else if(quantArray[i] == true){
+            resultOutput = resultOutput + "<span style=\"text-decoration: green wavy underline;\" onmouseover=\"showWarning(10)\">" + textArray[i] + "</span>";
         }
         else{
             resultOutput = resultOutput + textArray[i];
@@ -111,6 +125,12 @@ function showWarning(error){
             break;
         case 8:
             warning.innerHTML = "Do not use 'could', 'would', or 'should' .Use 'must' or 'shall' to describe a requirement";
+            break;
+        case 9:
+            warning.innerHTML = "Note that 'no' equals zero, and that zero is singular. 'No computer left behind' is correct. 'No computers left behind' is incorrect";
+            break;
+        case 10:
+            warning.innerHTML = "Use quantitative adverbs like 'few', 'some', 'many',and 'most' with care. They refer to plurality any way you count them. 'Most' equals at least 50 percent";
             break;
             
     }
