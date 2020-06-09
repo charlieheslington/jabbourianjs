@@ -16,6 +16,7 @@ function checkEssay(text){
     cwsArray = new Array();
     noArray = new Array();
     quantArray = new Array();
+    console.log(textArray);
     for(var i = 0; i < textArray.length; i++){
         if(textArray[i].match(/ly$/)){
             lyArray[i] = true;
@@ -84,6 +85,9 @@ function checkEssay(text){
         }
         else if(quantArray[i] == true){
             resultOutput = resultOutput + "<span style=\"text-decoration: green wavy underline;\" onmouseover=\"showWarning(10)\">" + textArray[i] + "</span>";
+        }
+        else if(textArray[i].match(/\n$/)){
+            resultOutput = resultOutput + "<br/>";
         }
         else{
             resultOutput = resultOutput + textArray[i];
