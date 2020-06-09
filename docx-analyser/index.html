@@ -1,22 +1,22 @@
 <html>
   <head>
     <title>Jabbourian.JS</title>
-    <link rel="stylesheet" href="css/app.css"/>
+    <link rel="stylesheet" href="../css/app.css"/>
   </head>
   <body>
     <div class="container" id="start">
       <div class="row justify-content-center">
         <div class="col-md-8">
           <div class="card">
-            <div class="card-header">Jabbourian.JS</div>                        
+            <div class="card-header">Jabbourian.JS DOCX Analyser</div>                        
             <div class="card-body">
               <blockquote class="blockquote">
                 <p class="mb-0">"I don't care if the computer dies, I care if the computer lies."</p>  
                 <footer class="blockquote-footer">Dr Jabbour</footer>
               </blockquote>
-              <p>Paste sections of text in the text area below:</p>
-              <textarea id="essay" class="form-control" rows="8"></textarea>
-              <p><button class="btn btn-primary" onclick="checkText(document.getElementById('essay').value)">Analyse</button></p>
+              <p>Upload a completed essay in DOCX format. To download the template document, <a href="assets/ACE-Writing-Template.docx">click here.</a></p>
+              <input type="file" id="essay" class="form-control"/>
+              <p><button class="btn btn-primary" onclick="checkDOCX(document.getElementById('essay').files[0])">Analyse</button></p>
             </div>
           </div>
         </div>
@@ -29,15 +29,16 @@
               <div class="card-header">Jabbourian.JS Result </div>                        
               <div class="card-body">
                 <div class="text-center" style="margin-bottom: 10px;">
-                  <button class="btn btn-outline-info" onclick="window.location.reload(false); ">Check Another Section</button> <button class="btn btn-outline-warning" id="score"></button>
+                  <button class="btn btn-outline-info" onclick="window.location.reload(false); ">Check Another Document</button> <button class="btn btn-outline-warning" id="score"></button>
                 </div>
+                <div id ="structureBox"></div>
                 <div id="result" spellcheck="true" contenteditable="true">Checking your work...</div>
               </div>
             </div>
           </div>
         </div>
     </div>
-    <div class= "alert alert-danger" id="violation" style="position: fixed; margin-left: 20px; top:20px; right:20px; display: none;">Hello</div>
-    <script src="js/Jabbourian.js"></script>
+    <div class= "alert alert-danger" id="violation" style="position: fixed; top:20px; right:20px; margin-left:20px; display: none;">Hello</div>
+    <script src="../js/mammoth.js"></script><script src="../js/Jabbourian.js"></script>
   </body>
 </html>

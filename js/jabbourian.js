@@ -1,11 +1,155 @@
-function checkEssay(text){
+function checkText(text){
     //HTML DEPENDANT CODE//
     var start = document.getElementById("start");
     start.style.display = "none";
     var end = document.getElementById("end");
     end.style.display = "block";
     //HTML DEPENDANT CODE //
-    textArray = text.split(/([.,'\s!?])/g);
+    var errors = 0;
+    jjs = jabbourianJS(text);
+    result = jjs[0];
+    score = jjs[1];
+    //HTML DEPENDANT CODE//
+    resultBox = document.getElementById("result")
+    resultBox.innerHTML = result;
+    scoreBox = document.getElementById("score");
+    scoreBox.innerHTML = "This has a JabbourScore of: " + score + "/20";
+    //HTML DEPENDANT CODE//
+}
+
+function checkDOCX(file){
+    var extension = file.name.split('.').pop().toLowerCase();
+    htmlRender = "";
+    if (extension !== "docx"){
+        showWarning(501);
+        return -1;
+    } else{
+        //HTML DEPENDANT CODE//
+        var start = document.getElementById("start");
+        start.style.display = "none";
+        var end = document.getElementById("end");
+        end.style.display = "block";
+        //HTML DEPENDANT CODE //
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            var arrayBuffer = reader.result;
+            var parsedFile = mammoth.convertToHtml({arrayBuffer: reader.result}).then(
+                function (htmlResult) {
+                    var parser = new DOMParser();
+                    htmlRender = parser.parseFromString(htmlResult.value,"text/html");
+                }.bind(this)).then(function(){analyseDOCX();});
+        }.bind(this);
+        reader.readAsArrayBuffer(file);
+    }
+}
+function analyseDOCX(){
+    console.log(htmlRender);
+    //Essay Structure Checking //
+    structureErrors = 0;
+    var headings = htmlRender.getElementsByTagName("h1");
+    var headingArray = new Array();
+    for (var i = 0; i < headings.length; i++){
+        if (headings[i].innerText.match(/executive summary/i)){ //headingArray[0]
+            console.log("Found Executive Summary");
+            headingArray[0] = true;
+        }
+        else if (headings[i].innerText.match(/problem statement/i)){ //headingArray[1]
+            console.log("Found Problem Statement");
+            headingArray[1] = true;
+        }
+        else if (headings[i].innerText.match(/background/i)){ //headingArray[2]
+            console.log("Found Background");
+            headingArray[2] = true;
+        }
+        else if (headings[i].innerText.match(/assumptions/i)){ //headingArray[3]
+            console.log("Found Assumptions");
+            headingArray[3] = true;
+        }
+        else if (headings[i].innerText.match(/techniques and tools/i) || headings[i].innerText.match(/tools and techniques/i)){ //headingArray[4]
+            console.log("Found Techniques and Tools");
+            headingArray[4] = true;
+        }
+        else if (headings[i].innerText.match(/problem solution/i)){ //headingArray[5]
+            console.log("Found Problem Solution");
+            headingArray[5] = true;
+        }
+        else if (headings[i].innerText.match(/risk assessment/i)){ //headingArray[6]
+            console.log("Found Risk Assessment");
+            headingArray[6] = true;
+        }
+        else if (headings[i].innerText.match(/references/i)){ //headingArray[7]
+            console.log("Found References");
+            headingArray[7] = true;
+        }
+    }
+    //Essay Structure Checker //
+    //Jabbourian Checker //
+    var paragraphs = htmlRender.getElementsByTagName("p");
+    //console.log(htmlRender.html.body);
+    var el = document.createElement('html');
+    bodyHTML = htmlRender.getElementsByTagName("body")[0];
+    documentElements = bodyHTML.children;
+    var outputResult = ""
+    var outputErrors = 0;
+    var paragraphsCount = 0;
+    var firstHeading = false;
+    /*for (var i = 0; i < paragraphs.length; i++){
+        var jjs = jabbourianJS(paragraphs[i].innerText);
+        outputResult = outputResult + jjs[0] + "<br />";
+        outputErrors = outputErrors + jjs[1];
+    }*/
+    for (var i = 0; i < documentElements.length; i++){
+        if((documentElements[i].nodeName != "H1")){
+            var jjs = jabbourianJS(documentElements[i].innerText);
+            outputResult = outputResult + jjs[0] + "<br />";
+            if (firstHeading == true){
+                outputErrors = outputErrors + jjs[1];
+                paragraphsCount++;
+            }
+        } else{
+            outputResult = outputResult + "<br/>" + documentElements[i].innerText + "<br/><hr/>";
+            firstHeading = true;
+        }
+    }
+    outputErrors = outputErrors / paragraphsCount;
+    //Jabbourian Checker //
+    //HTML DEPENDANT CODE//
+    resultBox = document.getElementById("result")
+    resultBox.innerHTML = outputResult;
+    scoreBox = document.getElementById("score");
+    scoreBox.innerHTML = "This Document's JabbourScore: " + Math.round(outputErrors) + "/20";
+    structureBox = document.getElementById("structureBox");
+    if (headingArray[0] != true){
+        structureBox.innerHTML = structureBox.innerHTML + "<div class= \"alert alert-danger\">This essay is missing an Executive Summary section</div>"
+    }
+    if (headingArray[1] != true){
+        structureBox.innerHTML = structureBox.innerHTML + "<div class= \"alert alert-danger\">This essay is missing a Problem Statment section</div>"
+    }
+    if (headingArray[2] != true){
+        structureBox.innerHTML = structureBox.innerHTML + "<div class= \"alert alert-danger\">This essay is missing a Background section</div>"
+    }
+    if (headingArray[3] != true){
+        structureBox.innerHTML = structureBox.innerHTML + "<div class= \"alert alert-danger\">This essay is missing an Assumptions section</div>"
+    }
+    if (headingArray[4] != true){
+        structureBox.innerHTML = structureBox.innerHTML + "<div class= \"alert alert-danger\">This essay is missing a Techniques and Tools section</div>"
+    }
+    if (headingArray[5] != true){
+        structureBox.innerHTML = structureBox.innerHTML + "<div class= \"alert alert-danger\">This essay is missing a Problem Solution section</div>"
+    }
+    if (headingArray[6] != true){
+        structureBox.innerHTML = structureBox.innerHTML + "<div class= \"alert alert-danger\">This essay is missing a Risk Assessment section</div>"
+    }
+    if (headingArray[7] != true){
+        structureBox.innerHTML = structureBox.innerHTML + "<div class= \"alert alert-danger\">This essay is missing a References section</div>"
+    }
+    //HTML DEPENDANT CODE//
+
+
+}
+
+function jabbourianJS(text){
+    textArray = text.split(/([.,"'\s!?])/g);
     lyArray = new Array();
     ingArray = new Array();
     appostArray = new Array();
@@ -16,43 +160,58 @@ function checkEssay(text){
     cwsArray = new Array();
     noArray = new Array();
     quantArray = new Array();
-    console.log(textArray);
+    errors = 0;
     for(var i = 0; i < textArray.length; i++){
         if(textArray[i].match(/ly$/)){
             lyArray[i] = true;
+            errors++;
         }
         else if(textArray[i].match(/ing$/)){
             ingArray[i] = true;
+            errors++;
         }
         else if(textArray[i] == "'"){
             appostArray[i] = true;
+            errors++;
         }
         else if(textArray[i] ==  "."){
             if(["about", "by", "during", "except", "from", "in", "into", "like", "minus", "near","of", "off", "on", "onto", "over", "past", "since", "than", "to", "under", "until", "upon", "with", "without"].indexOf(textArray[i-1]) > -1){
                 endPrepositionArray[i-1] = true;
-                console.log("Broken rule at word: " + textArray[i-1]);
+                errors++;
             };
             if(["and", "but", "or"].indexOf(textArray[i+2]) > -1){
                 sentanceStartArray[i+1] = true;
-                console.log("Broken rule at word: " + textArray[i-1]);
+                errors++;
             };
         }
         else if(["always", "never", "any", "every", "all", "none"].indexOf(textArray[i]) > -1){
             avoidSweepingArray[i] = true;
+            errors++;
         }
         else if(["be", "have", "can", "do"].indexOf(textArray[i]) > -1){
             weakVerbArray[i] = true;
+            errors++;
         }
         else if(["could", "would", "should"].indexOf(textArray[i]) > -1){
             cwsArray[i] = true;
+            errors++;
         }
         else if(["no"].indexOf(textArray[i]) > -1){
             noArray[i] = true;
+            errors++;
         }
         else if(["few", "some", "many", "most"].indexOf(textArray[i]) > -1){
             quantArray[i] = true;
-        }
-        
+            errors++;
+        }   
+    }
+    if(errors == 0){
+        jabbourScore = 20;
+    } else{
+        jabbourScore = Math.round(((1-((errors*25) / (textArray.length/2))) * 100)/5);
+    }
+    if (jabbourScore < 0){
+        jabbourScore = 0;
     }
     resultOutput = "";
     for(var i = 0; i < textArray.length; i++){
@@ -93,15 +252,9 @@ function checkEssay(text){
             resultOutput = resultOutput + textArray[i];
         }
     }
-    //HTML DEPENDANT CODE//
-    resultBox = document.getElementById("result")
-    resultBox.innerHTML = resultOutput;
-    //HTML DEPENDANT CODE//
-
-
-    //console.log("out: " + textArray[0] + " -- is ly: " + lyArray[0]);
-    //console.log("out: " + textArray[2] + " -- is ing: " + ingArray[2]);
+    return [resultOutput, jabbourScore];
 }
+
 
 function showWarning(error){
     warning = document.getElementById("violation");
@@ -135,6 +288,9 @@ function showWarning(error){
             break;
         case 10:
             warning.innerHTML = "Use quantitative adverbs like 'few', 'some', 'many',and 'most' with care. They refer to plurality any way you count them. 'Most' equals at least 50 percent";
+            break;
+        case 501:
+            warning.innerHTML = "Jabbourian.JS can only parse \".docx\" files. Please convert to this format or use the template!";
             break;
             
     }
