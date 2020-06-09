@@ -18,6 +18,10 @@ function checkText(text){
 }
 
 function checkDOCX(file){
+    if(file == null){
+        showWarning(502);
+        return -1;   
+    }
     var extension = file.name.split('.').pop().toLowerCase();
     htmlRender = "";
     if (extension !== "docx"){
@@ -291,6 +295,9 @@ function showWarning(error){
             break;
         case 501:
             warning.innerHTML = "Jabbourian.JS can only parse \".docx\" files. Please convert to this format or use the template!";
+            break;
+        case 502:
+            warning.innerHTML = "You need to upload a file first!";
             break;
             
     }
