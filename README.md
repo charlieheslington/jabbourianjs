@@ -3,11 +3,12 @@
 ## General info
 Checks sections of writing against rules from the ACE writing guide. Please excuse this readme's Jabbourian.
 
-This checker currently checks text against 8 rules and 2 warnings from the ACE Writing Guide.
+This checker currently checks text against 8 rules and 2 warnings from the ACE Writing Guide and can take .docx files as an input.
 
 ## Technologies
 * JavaScript
 * Bootstrap
+* Mammoth.JS
 
 ## Setup
 To use Jabbourian.JS - first, you will need to clone the repositary.
@@ -28,6 +29,18 @@ This checker checks against the following rules of the ACE Writing Guide
 * Do not use 'could', 'would', or 'should' .Use 'must' or 'shall' to describe a requirement
 * Note that 'no' equals zero, and that zero is singular. 'No computer left behind' is correct. 'No computers left behind' is incorrect
 * Use quantitative adverbs like 'few', 'some', 'many',and 'most' with care. They refer to plurality any way you count them. 'Most' equals at least 50 percent
+
+This version can also take an uploaded .docx file and analyse structure and Jabbourian. Files should adhere to the template or use Heading 1 Attrbutes for document section titles. The .docx analyser checks for the following sections within a document:
+
+* Executive Summary
+* Problem Statement
+* Background
+* Assumptions
+* Techniques and Tools
+* Problem Solution
+* Risk Assessment
+* References
+
 
 ## Status
 Project is: _in progress_
