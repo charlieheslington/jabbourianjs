@@ -50,3 +50,7 @@ Writing big long essays and realising there could be a systematic solution to my
 
 ## Contact
 Created by [@charlieheslington](https://github.com/charlieheslington) - charlie.hesli@gmail.com - feel free to contact me!
+
+<p align="center"><img src="https://i.ibb.co/0DtDN9r/MOSHED-2020-2-10-13-44-27.jpg" width="200px" height="100px"></img></p>
+
+Lovingly made in UK
