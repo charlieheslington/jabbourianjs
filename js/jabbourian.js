@@ -1,5 +1,10 @@
+/**
+ * checkText()
+ * Manipulates DOM, runns the jabbourianJS() function on the text and outputs to the DOM
+ * @param {string} text 
+ */
 function checkText(text){
-    //HTML DEPENDANT CODE//
+    //HTML DEPENDANT CODE //
     var start = document.getElementById("start");
     start.style.display = "none";
     var end = document.getElementById("end");
@@ -17,6 +22,14 @@ function checkText(text){
     //HTML DEPENDANT CODE//
 }
 
+/**
+ * checkDOCX()
+ * Takes a file, checks the file type is correct and uses mammoth to convert to HTML -> output sent to analyse DOCX
+ * @param {File} file
+ * @returns 1 on failure
+ * @global htmlRender
+ * note - could be changed to checkFile() and run code on PPTX documents if the extension is correct
+ */
 function checkDOCX(file){
     if(file == null){
         showWarning(502);
@@ -46,6 +59,12 @@ function checkDOCX(file){
         reader.readAsArrayBuffer(file);
     }
 }
+
+/**
+ * checkDOCX() 
+ * Uses the global htmlRender varaible, forms an array of headings and paragraphs and checks each heading is present. Paragraphs are run through jabbourianJS()
+ * 
+ */
 function analyseDOCX(){
     console.log(htmlRender);
     //Essay Structure Checking //
@@ -97,11 +116,6 @@ function analyseDOCX(){
     var outputErrors = 0;
     var paragraphsCount = 0;
     var firstHeading = false;
-    /*for (var i = 0; i < paragraphs.length; i++){
-        var jjs = jabbourianJS(paragraphs[i].innerText);
-        outputResult = outputResult + jjs[0] + "<br />";
-        outputErrors = outputErrors + jjs[1];
-    }*/
     for (var i = 0; i < documentElements.length; i++){
         if((documentElements[i].nodeName != "H1")){
             var jjs = jabbourianJS(documentElements[i].innerText);
@@ -152,6 +166,13 @@ function analyseDOCX(){
 
 }
 
+/**
+ * jabbourianJS()
+ * Takes a stringand returns a html formatted output with errors to be displayed in the result window alongside a JabbourScore in an array
+ * 
+ * @param {string} text 
+ * @returns {Array} [0] => Formatted Outputs [1] => JabbourScore
+ */
 function jabbourianJS(text){
     textArray = text.split(/([.,"'\s!?])/g);
     lyArray = new Array();
@@ -260,6 +281,12 @@ function jabbourianJS(text){
 }
 
 
+/**
+ * showWarning()
+ * Displays the error message in the top right of the browser window when called
+ * @param error - a number symbolising which error to display.
+ * New error types can be defined here
+ */
 function showWarning(error){
     warning = document.getElementById("violation");
     switch (error){
