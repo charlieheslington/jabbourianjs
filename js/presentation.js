@@ -1,7 +1,7 @@
 function checkPresentation(file){
 	console.log(file)
 	$("#test").pptxToHtml({
-		pptxFileUrl: "Sample_12.pptx",
+		pptxFileUrl: "Week_7_Presentation.pptx",
 	});
 	waitForElement("slide",function(){
     	console.log("done");
