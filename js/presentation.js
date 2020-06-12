@@ -1,28 +1,37 @@
 function checkPresentation(file){
 	console.log(file)
 	$("#test").pptxToHtml({
-	pptxFileUrl: "Sample_12.pptx",
-
-});
-	$("#test").ready(function(){
-		console.log("here")
+		pptxFileUrl: "Sample_12.pptx",
 	});
 	waitForElement("slide",function(){
     	console.log("done");
 		console.log(document.getElementById("test").innerHtml);
 		console.log($("#test"));
-		var slides;
-		slides = document.getElementById("test")
-		slides = slides.getElementsByClassName("slides")
-		console.log(slides)
+		let slides;
+		elementToEdit = document.getElementById("test");
+		slides = elementToEdit.getElementsByClassName("slide");
+		modifySlides(slides);
 	});
 
+}
 
+function modifySlides(toMod){
+	let i;
+	for (i = 0; i < toMod.length; i++){
+		let slide;
+		slide = $(toMod[i]).find("span");
+		let y;
+		console.log(i) 
+		for(y = 0; y < slide.length; y++){
+			portion = slide[y];
+			console.log(portion.innerText)
+		}
+	}
 }
 
 function waitForElement(elementId, callBack){
   window.setTimeout(function(){
-    var element = document.getElementsByClassName(elementId);
+    let element = document.getElementsByClassName(elementId);
     if(element){
       callBack(elementId, element);
     }else{
