@@ -102,9 +102,16 @@ function analyseDOCX(){
         outputResult = outputResult + jjs[0] + "<br />";
         outputErrors = outputErrors + jjs[1];
     }*/
+
+    //Scores the tuple of JB score and 
+    var newScoreArr = 0;
+    var totalLength = 0.0;
+    scoreLengthArray = new Array();
     for (var i = 0; i < documentElements.length; i++){
         if((documentElements[i].nodeName != "H1")){
             var jjs = jabbourianJS(documentElements[i].innerText);
+            totalLength += jjs[2]
+            scoreLengthArray[i] = [jjs[0], jjs[2]]
             outputResult = outputResult + jjs[0] + "<br />";
             if (firstHeading == true){
                 outputErrors = outputErrors + jjs[1];
@@ -115,9 +122,22 @@ function analyseDOCX(){
             firstHeading = true;
         }
     }
+    for(let y = 0; y < scoreLengthArray.length; y++){
+        newScoreArr += scoreLengthArray[0] * (scoreLengthArray[1]/totalLength)
+    }
     outputErrors = outputErrors / paragraphsCount;
+
+    //Testing Code Start//
+    console.log("New Score outputResult")
+    console.log(newScoreArr)
+
+    console.log("Old Score output")
+    console.log(outputErrors)
+    //Testing Code End//
+
     //Jabbourian Checker //
     //HTML DEPENDANT CODE//
+
     resultBox = document.getElementById("result")
     resultBox.innerHTML = outputResult;
     scoreBox = document.getElementById("score");
@@ -164,51 +184,75 @@ function jabbourianJS(text){
     cwsArray = new Array();
     noArray = new Array();
     quantArray = new Array();
+    /*Errors for each infraction*/
     errors = 0;
+    lyErrors = 0;
+    ingErrors = 0;
+    appostErrors = 0;
+    prepositionErrors= 0;
+    sentStartError = 0;
+    sweepingError = 0;
+    weakVerbError = 0;
+    cwsError = 0;
+    noError = 0;
+    quantError = 0;
+
     for(var i = 0; i < textArray.length; i++){
         if(textArray[i].match(/ly$/)){
             lyArray[i] = true;
+            lyErrors++;
             errors++;
         }
         else if(textArray[i].match(/ing$/)){
             ingArray[i] = true;
+            ingErrors++;
             errors++;
         }
         else if(textArray[i] == "'"){
             appostArray[i] = true;
+            appostErrors++;
             errors++;
         }
         else if(textArray[i] ==  "."){
             if(["about", "by", "during", "except", "from", "in", "into", "like", "minus", "near","of", "off", "on", "onto", "over", "past", "since", "than", "to", "under", "until", "upon", "with", "without"].indexOf(textArray[i-1]) > -1){
                 endPrepositionArray[i-1] = true;
+                prepositionErrors++;
                 errors++;
             };
             if(["and", "but", "or"].indexOf(textArray[i+2]) > -1){
                 sentanceStartArray[i+1] = true;
+                sentStartError++;
                 errors++;
             };
         }
         else if(["always", "never", "any", "every", "all", "none"].indexOf(textArray[i]) > -1){
             avoidSweepingArray[i] = true;
+            sweepingError++;
             errors++;
         }
         else if(["be", "have", "can", "do"].indexOf(textArray[i]) > -1){
             weakVerbArray[i] = true;
+            weakVerbError++;
             errors++;
         }
         else if(["could", "would", "should"].indexOf(textArray[i]) > -1){
             cwsArray[i] = true;
+            cwsError++;
             errors++;
         }
         else if(["no"].indexOf(textArray[i]) > -1){
             noArray[i] = true;
+            noError++;
             errors++;
         }
         else if(["few", "some", "many", "most"].indexOf(textArray[i]) > -1){
             quantArray[i] = true;
+            quantError++;
             errors++;
         }   
     }
+    calculateJabScore(lyErrors, ingErrors, appostErrors, prepositionErrors, sentStartError, sweepingError, weakVerbError, cwsError, noError, quantError, length);
+
     if(errors == 0){
         jabbourScore = 20;
     } else{
@@ -256,9 +300,44 @@ function jabbourianJS(text){
             resultOutput = resultOutput + textArray[i];
         }
     }
-    return [resultOutput, jabbourScore];
+    return [resultOutput, jabbourScore, textArray.length];
 }
 
+function calculateJabScore(lyErrors, ingErrors, appostErrors, prepositionErrors, sentStartError, sweepingError, weakVerbError, cwsError, noError, quantError, length){
+    /*
+        Calculate the JS score using more percise method:
+            Allocate weights to each of the scores
+                
+                ly- 17
+                ing- 17
+                appost- .5 
+                prep- .5
+                sentStart- .5
+                sweeping- 1.5
+                weak verb- 2.0
+                cws error-.5
+                no Error-.5
+                quantError- 1.0
+
+    */
+
+    //These are the weights of the errors. 
+    lyWeight = 1.5;
+    ingWeight = 1.5;
+    appostWeight = .5;
+    prepWeight = .5;
+    sentStartWeight = .5;
+    sweepingWeight = 1.5;
+    weakVerbWeight = 2.0
+    cwsWeight = .5;
+    noWeight = .5;
+    quantWeight= 1.0;
+
+    //Error Cap- Max an error can deduct dependent on lenght. 
+    //You calculate avg number of sentences and then deduct how much 
+    avgWordsInSentence = 20.0;
+
+    weakVerbError =  Math.ceiling(length/avgWordsInSentence); //Math.round(length/avgWordsInSentence) is expected number of sentences
 
 function showWarning(error){
     warning = document.getElementById("violation");
