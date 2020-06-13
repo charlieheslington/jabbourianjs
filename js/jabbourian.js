@@ -139,7 +139,7 @@ function analyseDOCX(){
             if (outputLengthArray[i] !== 0){
                 var calc = ((outputErrorsArray[i]/totalLength)*outputLengthArray[i]);
                 if (!Number.isNaN(calc)){
-                    outputErrors = outputErrors + calc;
+                    outputErrors = outputErrors + calc; //Adds up all values
                     console.log(calc);
                 }
             }
