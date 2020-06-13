@@ -24,7 +24,12 @@ function modifySlides(toMod){
 		console.log(i) 
 		for(y = 0; y < slide.length; y++){
 			portion = slide[y];
-			console.log(portion.innerText)
+			if (portion.innerText.trim() != "" && portion.innerText.trim() != "●" ) {
+				console.log(portion.innerText);
+				var jsResults = jabbourianJS(portion.innerText);
+				//$(slide[y]) = jsResults[0]
+				console.log(jsResults[1])
+			}
 		}
 	}
 }
