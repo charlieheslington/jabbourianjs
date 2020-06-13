@@ -249,7 +249,7 @@ function jabbourianJS(text){
     if(errors == 0){
         jabbourScore = 20;
     } else{
-        jabbourScore = Math.round(((1-((errors*25) / (textArray.length/2))) * 100)/5);
+        jabbourScore = Math.round(((1-((errors*21) / (textArray.length/2))) * 100)/5);
     }
     if (jabbourScore < 0){
         jabbourScore = 0;
