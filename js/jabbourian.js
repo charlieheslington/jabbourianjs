@@ -110,8 +110,8 @@ function analyseDOCX(){
     for (var i = 0; i < documentElements.length; i++){
         if((documentElements[i].nodeName != "H1")){
             var jjs = jabbourianJS(documentElements[i].innerText);
-            totalLength += jjs[2]
-            scoreLengthArray[i] = [jjs[0], jjs[2]]
+            totalLength += jjs[2];
+            scoreLengthArray[i] = [jjs[1], jjs[2]];
             outputResult = outputResult + jjs[0] + "<br />";
             if (firstHeading == true){
                 outputErrors = outputErrors + jjs[1];
@@ -120,10 +120,11 @@ function analyseDOCX(){
         } else{
             outputResult = outputResult + "<br/>" + documentElements[i].innerText + "<br/><hr/>";
             firstHeading = true;
+            scoreLengthArray[i] = [0,0];
         }
     }
-    for(let y = 0; y < scoreLengthArray.length; y++){
-        newScoreArr += scoreLengthArray[0] * (scoreLengthArray[1]/totalLength)
+    for(let y = 0; y < documentElements.length; y++){
+        newScoreArr += scoreLengthArray[y][0] * (scoreLengthArray[y][1]/totalLength)
     }
     outputErrors = outputErrors / paragraphsCount;
 
@@ -251,7 +252,10 @@ function jabbourianJS(text){
             errors++;
         }   
     }
-    calculateJabScore(lyErrors, ingErrors, appostErrors, prepositionErrors, sentStartError, sweepingError, weakVerbError, cwsError, noError, quantError, length);
+    newScore = calculateJabScore(lyErrors, ingErrors, appostErrors, prepositionErrors, sentStartError, sweepingError, weakVerbError, cwsError, noError, quantError, textArray.length);
+
+    console.log("New Score: " + newScore)
+
 
     if(errors == 0){
         jabbourScore = 20;
@@ -261,6 +265,8 @@ function jabbourianJS(text){
     if (jabbourScore < 0){
         jabbourScore = 0;
     }
+    console.log("Old Score: " + jabbourScore)
+    jabbourScore = calculateJabScore(lyErrors, ingErrors, appostErrors, prepositionErrors, sentStartError, sweepingError, weakVerbError, cwsError, noError, quantError, textArray.length);
     resultOutput = "";
     for(var i = 0; i < textArray.length; i++){
         if(lyArray[i] == true){
@@ -321,6 +327,10 @@ function calculateJabScore(lyErrors, ingErrors, appostErrors, prepositionErrors,
 
     */
 
+    severityScore = 25.0;
+
+    toReturn = 0.0;
+
     //These are the weights of the errors. 
     lyWeight = 1.5;
     ingWeight = 1.5;
@@ -337,8 +347,80 @@ function calculateJabScore(lyErrors, ingErrors, appostErrors, prepositionErrors,
     //You calculate avg number of sentences and then deduct how much 
     avgWordsInSentence = 20.0;
 
-    weakVerbError =  Math.ceiling(length/avgWordsInSentence); //Math.round(length/avgWordsInSentence) is expected number of sentences
+    lyMax = .5 *  Math.ceil(length/avgWordsInSentence);
+    ingMax = 1 *  Math.ceil(length/avgWordsInSentence);
+    appostMax = 1 *  Math.ceil(length/avgWordsInSentence);
+    prepMax = 1 *  Math.ceil(length/avgWordsInSentence);
+    sentStartMax = 1 *  Math.ceil(length/avgWordsInSentence);
+    sweepingMax = 1 *  Math.ceil(length/avgWordsInSentence);
+    weakVerbMax = 1 *  Math.ceil(length/avgWordsInSentence); //Math.round(length/avgWordsInSentence) is expected number of sentences
+    cwsMax = 1 *  Math.ceil(length/avgWordsInSentence);
+    noMax = 1 *  Math.ceil(length/avgWordsInSentence);
+    quantMax = .5 *  Math.ceil(length/avgWordsInSentence);
 
+    if(lyErrors * lyWeight > lyMax ){
+        toReturn += lyMax;
+    } else {
+        toReturn += (lyErrors * lyWeight);
+    }
+
+    if(ingErrors * ingWeight > ingMax ){
+        toReturn += ingMax;
+    } else {
+        toReturn += (ingErrors * ingWeight);
+    }
+
+    if(appostErrors * appostWeight > appostMax ){
+        toReturn += appostMax;
+    } else {
+        toReturn += (appostErrors * appostWeight);
+    }
+
+    if(prepositionErrors * prepWeight > prepMax ){
+        toReturn += prepMax;
+    } else {
+        toReturn += (prepositionErrors * prepWeight);
+    }
+
+    if(sentStartError * sentStartWeight > sentStartMax ){
+        toReturn += sentStartMax;
+    } else {
+        toReturn += (sentStartError * sentStartWeight);
+    }
+
+    if(sweepingError * sweepingWeight > sweepingMax ){
+        toReturn += sweepingMax;
+    } else {
+        toReturn += (sweepingError * sweepingWeight);
+    }
+
+    if(weakVerbError * weakVerbWeight > weakVerbMax ){
+        toReturn += weakVerbMax;
+    } else {
+        toReturn += (weakVerbError * weakVerbWeight);
+    }
+
+    if(cwsError * cwsWeight > cwsMax ){
+        toReturn += cwsMax;
+    } else {
+        toReturn += (cwsError * cwsWeight);
+    }
+
+    if(noError * noWeight > noMax ){
+        toReturn += noMax;
+    } else {
+        toReturn += (noError * noWeight);
+    }
+
+    if(quantError * quantWeight > quantMax){
+        toReturn += quantMax;
+    } else {
+        toReturn += (quantError * quantWeight);
+    }
+    toReturn = Math.round(((1-((toReturn*severityScore) / (length/2))) * 100)/5);
+
+    return toReturn
+} 
 function showWarning(error){
     warning = document.getElementById("violation");
     switch (error){
