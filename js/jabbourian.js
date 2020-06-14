@@ -15,7 +15,7 @@ function checkText(text){
     result = jjs[0];
     score = jjs[1];
     //HTML DEPENDANT CODE//
-    resultBox = document.getElementById("result")
+    resultBox = document.getElementById("result");
     resultBox.innerHTML = result;
     scoreBox = document.getElementById("score");
     scoreBox.innerHTML = "This has a JabbourScore of: " + score + "/20";
@@ -113,23 +113,39 @@ function analyseDOCX(){
     bodyHTML = htmlRender.getElementsByTagName("body")[0];
     documentElements = bodyHTML.children;
     var outputResult = ""
-    var outputErrors = 0;
-    var paragraphsCount = 0;
+    var outputErrorsArray = new Array();
+    var outputLengthArray = new Array();
+    var totalLength = 0;
     var firstHeading = false;
     for (var i = 0; i < documentElements.length; i++){
         if((documentElements[i].nodeName != "H1")){
             var jjs = jabbourianJS(documentElements[i].innerText);
             outputResult = outputResult + jjs[0] + "<br />";
             if (firstHeading == true){
-                outputErrors = outputErrors + jjs[1];
-                paragraphsCount++;
+                outputErrorsArray[i] = jjs[1]; //JabbourScore of Paragraph
+                outputLengthArray[i] = jjs[2]; // Length of Paragraph
+                totalLength = totalLength + jjs[2];
             }
         } else{
             outputResult = outputResult + "<br/>" + documentElements[i].innerText + "<br/><hr/>";
             firstHeading = true;
         }
     }
-    outputErrors = outputErrors / paragraphsCount;
+    //New scoring system for .docx
+    // Note, if result is NaN (Not a Number, it shouldnt count as this is most likely an empty para)
+    outputErrors = 0;
+    for (var i = 0; i < documentElements.length; i++){
+        if((documentElements[i].nodeName != "H1")){
+            if (outputLengthArray[i] !== 0){
+                var calc = ((outputErrorsArray[i]/totalLength)*outputLengthArray[i]);
+                if (!Number.isNaN(calc)){
+                    outputErrors = outputErrors + calc; //Adds up all values
+                    console.log(calc);
+                }
+            }
+        }
+    }
+    ///outputErrors = (outputErrors * totalLength)/paragraphsCount;
     //Jabbourian Checker //
     //HTML DEPENDANT CODE//
     resultBox = document.getElementById("result")
@@ -233,7 +249,7 @@ function jabbourianJS(text){
     if(errors == 0){
         jabbourScore = 20;
     } else{
-        jabbourScore = Math.round(((1-((errors*25) / (textArray.length/2))) * 100)/5);
+        jabbourScore = Math.round(((1-((errors*21) / (textArray.length/2))) * 100)/5);
     }
     if (jabbourScore < 0){
         jabbourScore = 0;
@@ -277,7 +293,7 @@ function jabbourianJS(text){
             resultOutput = resultOutput + textArray[i];
         }
     }
-    return [resultOutput, jabbourScore];
+    return [resultOutput, jabbourScore, (textArray.length/2)];
 }
 
 
