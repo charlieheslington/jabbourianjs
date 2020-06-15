@@ -104,7 +104,7 @@ function analyseDOCX(){
     }*/
 
     //Scores the tuple of JB score and 
-    var newScoreArr = 0;
+    var newScoreArr = 0.0;
     var totalLength = 0.0;
     scoreLengthArray = new Array();
     for (var i = 0; i < documentElements.length; i++){
@@ -124,16 +124,22 @@ function analyseDOCX(){
         }
     }
     for(let y = 0; y < documentElements.length; y++){
-        newScoreArr += scoreLengthArray[y][0] * (scoreLengthArray[y][1]/totalLength)
+        //console.log("Percentage " + (scoreLengthArray[y][1]/totalLength));
+        //console.log("Score " + scoreLengthArray[y][0]);
+        //console.log("To Add: " + scoreLengthArray[y][0] * (scoreLengthArray[y][1]/totalLength))
+        newScoreArr += scoreLengthArray[y][0] * (scoreLengthArray[y][1]/totalLength);
     }
-    outputErrors = outputErrors / paragraphsCount;
 
+    if (newScoreArr < 0){
+        newScoreArr = 0;
+    }
     //Testing Code Start//
-    console.log("New Score outputResult")
+    console.log("Score: ")
     console.log(newScoreArr)
 
-    console.log("Old Score output")
-    console.log(outputErrors)
+    if(newScoreArr < 0){
+        newScoreArr = 0;
+    }
     //Testing Code End//
 
     //Jabbourian Checker //
@@ -142,7 +148,7 @@ function analyseDOCX(){
     resultBox = document.getElementById("result")
     resultBox.innerHTML = outputResult;
     scoreBox = document.getElementById("score");
-    scoreBox.innerHTML = "This Document's JabbourScore: " + Math.round(outputErrors) + "/20";
+    scoreBox.innerHTML = "This Document's JabbourScore: " + Math.round(newScoreArr) + "/20";
     structureBox = document.getElementById("structureBox");
     if (headingArray[0] != true){
         structureBox.innerHTML = structureBox.innerHTML + "<div class= \"alert alert-danger\">This essay is missing an Executive Summary section</div>"
@@ -231,7 +237,7 @@ function jabbourianJS(text){
             sweepingError++;
             errors++;
         }
-        else if(["be", "have", "can", "do"].indexOf(textArray[i]) > -1){
+        else if(["be", "have", "can", "do", "being"].indexOf(textArray[i]) > -1){
             weakVerbArray[i] = true;
             weakVerbError++;
             errors++;
@@ -252,21 +258,29 @@ function jabbourianJS(text){
             errors++;
         }   
     }
-    newScore = calculateJabScore(lyErrors, ingErrors, appostErrors, prepositionErrors, sentStartError, sweepingError, weakVerbError, cwsError, noError, quantError, textArray.length);
+    /*
+    newScore = calculateJabScore(lyErrors, ingErrors, appostErrors, prepositionErrors, sentStartError, sweepingError, weakVerbError, cwsError, noError, quantError, text.length,textArray.length);
 
     console.log("New Score: " + newScore)
-
-
-    if(errors == 0){
+    */
+   /*
+    if(errors === 0){
         jabbourScore = 20;
     } else{
-        jabbourScore = Math.round(((1-((errors*25) / (textArray.length/2))) * 100)/5);
+        jabbourScore = Math.round(((1-((errors*17) / (textArray.length/2))) * 100)/5);
     }
     if (jabbourScore < 0){
         jabbourScore = 0;
     }
+    
     console.log("Old Score: " + jabbourScore)
-    jabbourScore = calculateJabScore(lyErrors, ingErrors, appostErrors, prepositionErrors, sentStartError, sweepingError, weakVerbError, cwsError, noError, quantError, textArray.length);
+    console.log(text.length)
+    */
+    jabbourScore = calculateJabScore(lyErrors, ingErrors, appostErrors, prepositionErrors, sentStartError, sweepingError, weakVerbError, cwsError, noError, quantError, text.length,textArray.length);
+
+    if(errors === 0){
+        jabbourScore = 20;
+    }
     resultOutput = "";
     for(var i = 0; i < textArray.length; i++){
         if(lyArray[i] == true){
@@ -306,10 +320,10 @@ function jabbourianJS(text){
             resultOutput = resultOutput + textArray[i];
         }
     }
-    return [resultOutput, jabbourScore, textArray.length];
+    return [resultOutput, jabbourScore, text.length];
 }
 
-function calculateJabScore(lyErrors, ingErrors, appostErrors, prepositionErrors, sentStartError, sweepingError, weakVerbError, cwsError, noError, quantError, length){
+function calculateJabScore(lyErrors, ingErrors, appostErrors, prepositionErrors, sentStartError, sweepingError, weakVerbError, cwsError, noError, quantError, length, numSents){
     /*
         Calculate the JS score using more percise method:
             Allocate weights to each of the scores
@@ -326,8 +340,11 @@ function calculateJabScore(lyErrors, ingErrors, appostErrors, prepositionErrors,
                 quantError- 1.0
 
     */
+    if(length === 0){
+        return 20;
+    }
 
-    severityScore = 25.0;
+    severityScore = 10.5;
 
     toReturn = 0.0;
 
@@ -337,87 +354,89 @@ function calculateJabScore(lyErrors, ingErrors, appostErrors, prepositionErrors,
     appostWeight = .5;
     prepWeight = .5;
     sentStartWeight = .5;
-    sweepingWeight = 1.5;
-    weakVerbWeight = 2.0
-    cwsWeight = .5;
+    sweepingWeight = 2.5;
+    weakVerbWeight = 3.0;
+    cwsWeight = 1.5;
     noWeight = .5;
-    quantWeight= 1.0;
+    quantWeight = 1.0;
 
     //Error Cap- Max an error can deduct dependent on lenght. 
     //You calculate avg number of sentences and then deduct how much 
     avgWordsInSentence = 20.0;
+    //console.log(Math.ceil(length/avgWordsInSentence))
 
-    lyMax = .5 *  Math.ceil(length/avgWordsInSentence);
-    ingMax = 1 *  Math.ceil(length/avgWordsInSentence);
+    lyMax = .75 *  Math.ceil(length/avgWordsInSentence);
+    ingMax = 1.25 *  Math.ceil(length/avgWordsInSentence);
     appostMax = 1 *  Math.ceil(length/avgWordsInSentence);
     prepMax = 1 *  Math.ceil(length/avgWordsInSentence);
     sentStartMax = 1 *  Math.ceil(length/avgWordsInSentence);
-    sweepingMax = 1 *  Math.ceil(length/avgWordsInSentence);
-    weakVerbMax = 1 *  Math.ceil(length/avgWordsInSentence); //Math.round(length/avgWordsInSentence) is expected number of sentences
-    cwsMax = 1 *  Math.ceil(length/avgWordsInSentence);
+    sweepingMax = 1.5 *  Math.ceil(length/avgWordsInSentence);
+    weakVerbMax = 2.5 *  Math.ceil(length/avgWordsInSentence); //Math.round(length/avgWordsInSentence) is expected number of sentences
+    cwsMax = .5 *  Math.ceil(length/avgWordsInSentence);
     noMax = 1 *  Math.ceil(length/avgWordsInSentence);
-    quantMax = .5 *  Math.ceil(length/avgWordsInSentence);
+    quantMax = 1.0 *  Math.ceil(length/avgWordsInSentence);
 
-    if(lyErrors * lyWeight > lyMax ){
+    if((lyErrors * lyWeight) > lyMax ){
         toReturn += lyMax;
     } else {
         toReturn += (lyErrors * lyWeight);
     }
 
-    if(ingErrors * ingWeight > ingMax ){
+    if((ingErrors * ingWeight) > ingMax ){
         toReturn += ingMax;
     } else {
         toReturn += (ingErrors * ingWeight);
     }
 
-    if(appostErrors * appostWeight > appostMax ){
+    if((appostErrors * appostWeight) > appostMax ){
         toReturn += appostMax;
     } else {
         toReturn += (appostErrors * appostWeight);
     }
 
-    if(prepositionErrors * prepWeight > prepMax ){
+    if((prepositionErrors * prepWeight) > prepMax ){
         toReturn += prepMax;
     } else {
         toReturn += (prepositionErrors * prepWeight);
     }
 
-    if(sentStartError * sentStartWeight > sentStartMax ){
+    if((sentStartError * sentStartWeight) > sentStartMax ){
         toReturn += sentStartMax;
     } else {
         toReturn += (sentStartError * sentStartWeight);
     }
 
-    if(sweepingError * sweepingWeight > sweepingMax ){
+    if((sweepingError * sweepingWeight) > sweepingMax ){
         toReturn += sweepingMax;
     } else {
         toReturn += (sweepingError * sweepingWeight);
     }
 
-    if(weakVerbError * weakVerbWeight > weakVerbMax ){
+    if((weakVerbError * weakVerbWeight) > weakVerbMax ){
         toReturn += weakVerbMax;
     } else {
         toReturn += (weakVerbError * weakVerbWeight);
     }
 
-    if(cwsError * cwsWeight > cwsMax ){
+    if((cwsError * cwsWeight) > cwsMax ){
         toReturn += cwsMax;
     } else {
         toReturn += (cwsError * cwsWeight);
     }
 
-    if(noError * noWeight > noMax ){
+    if((noError * noWeight) > noMax ){
         toReturn += noMax;
     } else {
         toReturn += (noError * noWeight);
     }
 
-    if(quantError * quantWeight > quantMax){
+    if((quantError * quantWeight) > quantMax){
         toReturn += quantMax;
     } else {
         toReturn += (quantError * quantWeight);
     }
-    toReturn = Math.round(((1-((toReturn*severityScore) / (length/2))) * 100)/5);
+    toReturn = Math.round(((1-((toReturn*severityScore) / (numSents/2))) * 100)/5);
+
 
     return toReturn
 } 
