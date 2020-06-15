@@ -41,6 +41,10 @@ This version can also take an uploaded .docx file and analyse structure and Jabb
 * Risk Assessment
 * References
 
+##Scoring
+This feature checker implements a scoring system that tries to replicate how graders grade an essay. It is a weighted system that caps the errors at a certain number based on the total number of sentences. Certain errors, such as weak verbs, are weighed much more severly than other errors. The exact numbers were determined by taking a few graded essays and adjusting the constants until the output matched the Jabbour score of the essays. 
+
+We use the following process to score the essays. The program loops through the paragraphs and calculates a jabbour score for each of the paragraphs. It then returns the paragraph's jabbour score. We then average each paragraph weighted on how long the paragraph is in relation to the total essay. This way short paragraphs that have perfect jabbour do not out weigh long paragraphs with poor jabbour. This also ensures that the DOCX and text analyzing both return the same scores. 
 
 ## Status
 Project is: _in progress_
@@ -50,7 +54,8 @@ Writing big long essays and realising there could be a systematic solution to my
 
 ## Contact
 Created by [@charlieheslington](https://github.com/charlieheslington) - charlie.hesli@gmail.com - feel free to contact me!
+Assisted by [@ColinBoerger] - colin.h.s.boerger@gmail.com
 
 <p align="center"><img src="https://i.ibb.co/0DtDN9r/MOSHED-2020-2-10-13-44-27.jpg" width="200px" height="100px"></img></p>
 
-Lovingly made in UK
+Lovingly made in UK/Plymouth, MA (Home of the American Revolution)
