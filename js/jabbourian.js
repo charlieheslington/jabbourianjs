@@ -1,5 +1,10 @@
+/**
+ * checkText()
+ * Manipulates DOM, runns the jabbourianJS() function on the text and outputs to the DOM
+ * @param {string} text 
+ */
 function checkText(text){
-    //HTML DEPENDANT CODE//
+    //HTML DEPENDANT CODE //
     var start = document.getElementById("start");
     start.style.display = "none";
     var end = document.getElementById("end");
@@ -10,13 +15,21 @@ function checkText(text){
     result = jjs[0];
     score = jjs[1];
     //HTML DEPENDANT CODE//
-    resultBox = document.getElementById("result")
+    resultBox = document.getElementById("result");
     resultBox.innerHTML = result;
     scoreBox = document.getElementById("score");
     scoreBox.innerHTML = "This has a JabbourScore of: " + score + "/20";
     //HTML DEPENDANT CODE//
 }
 
+/**
+ * checkDOCX()
+ * Takes a file, checks the file type is correct and uses mammoth to convert to HTML -> output sent to analyse DOCX
+ * @param {File} file
+ * @returns 1 on failure
+ * @global htmlRender
+ * note - could be changed to checkFile() and run code on PPTX documents if the extension is correct
+ */
 function checkDOCX(file){
     if(file == null){
         showWarning(502);
@@ -46,6 +59,12 @@ function checkDOCX(file){
         reader.readAsArrayBuffer(file);
     }
 }
+
+/**
+ * checkDOCX() 
+ * Uses the global htmlRender varaible, forms an array of headings and paragraphs and checks each heading is present. Paragraphs are run through jabbourianJS()
+ * 
+ */
 function analyseDOCX(){
     console.log(htmlRender);
     //Essay Structure Checking //
@@ -94,19 +113,15 @@ function analyseDOCX(){
     bodyHTML = htmlRender.getElementsByTagName("body")[0];
     documentElements = bodyHTML.children;
     var outputResult = ""
-    var outputErrors = 0;
-    var paragraphsCount = 0;
+    var outputErrorsArray = new Array();
+    var outputLengthArray = new Array();
+    var totalLength = 0;
     var firstHeading = false;
-    /*for (var i = 0; i < paragraphs.length; i++){
-        var jjs = jabbourianJS(paragraphs[i].innerText);
-        outputResult = outputResult + jjs[0] + "<br />";
-        outputErrors = outputErrors + jjs[1];
-    }*/
-
     //Scores the tuple of JB score and 
     var newScoreArr = 0.0;
     var totalLength = 0.0;
     scoreLengthArray = new Array();
+
     for (var i = 0; i < documentElements.length; i++){
         if((documentElements[i].nodeName != "H1")){
             var jjs = jabbourianJS(documentElements[i].innerText);
@@ -114,8 +129,9 @@ function analyseDOCX(){
             scoreLengthArray[i] = [jjs[1], jjs[2]];
             outputResult = outputResult + jjs[0] + "<br />";
             if (firstHeading == true){
-                outputErrors = outputErrors + jjs[1];
-                paragraphsCount++;
+                outputErrorsArray[i] = jjs[1]; //JabbourScore of Paragraph
+                outputLengthArray[i] = jjs[2]; // Length of Paragraph
+                totalLength = totalLength + jjs[2];
             }
         } else{
             outputResult = outputResult + "<br/>" + documentElements[i].innerText + "<br/><hr/>";
@@ -123,6 +139,7 @@ function analyseDOCX(){
             scoreLengthArray[i] = [0,0];
         }
     }
+
     for(let y = 0; y < documentElements.length; y++){
         //console.log("Percentage " + (scoreLengthArray[y][1]/totalLength));
         //console.log("Score " + scoreLengthArray[y][0]);
@@ -141,6 +158,27 @@ function analyseDOCX(){
         newScoreArr = 0;
     }
     //Testing Code End//
+
+
+    /*/V0.9 scoring system for .docx IGNORE
+    // Note, if result is NaN (Not a Number, it shouldnt count as this is most likely an empty para)
+    outputErrors = 0;
+    for (var i = 0; i < documentElements.length; i++){
+        if((documentElements[i].nodeName != "H1")){
+            if (outputLengthArray[i] !== 0){
+                var calc = ((outputErrorsArray[i]/totalLength)*outputLengthArray[i]);
+                if (!Number.isNaN(calc)){
+                    outputErrors = outputErrors + calc; //Adds up all values
+                    console.log(calc);
+                }
+            }
+        }
+    }
+    ///outputErrors = (outputErrors * totalLength)/paragraphsCount;
+    IGNORE
+    */
+  
+  
 
     //Jabbourian Checker //
     //HTML DEPENDANT CODE//
@@ -179,6 +217,13 @@ function analyseDOCX(){
 
 }
 
+/**
+ * jabbourianJS()
+ * Takes a stringand returns a html formatted output with errors to be displayed in the result window alongside a JabbourScore in an array
+ * 
+ * @param {string} text 
+ * @returns {Array} [0] => Formatted Outputs [1] => JabbourScore
+ */
 function jabbourianJS(text){
     textArray = text.split(/([.,"'\s!?])/g);
     lyArray = new Array();
@@ -268,6 +313,7 @@ function jabbourianJS(text){
         jabbourScore = 20;
     } else{
         jabbourScore = Math.round(((1-((errors*17) / (textArray.length/2))) * 100)/5);
+
     }
     if (jabbourScore < 0){
         jabbourScore = 0;
@@ -437,9 +483,16 @@ function calculateJabScore(lyErrors, ingErrors, appostErrors, prepositionErrors,
     }
     toReturn = Math.round(((1-((toReturn*severityScore) / (numSents/2))) * 100)/5);
 
-
     return toReturn
 } 
+
+
+/**
+ * showWarning()
+ * Displays the error message in the top right of the browser window when called
+ * @param error - a number symbolising which error to display.
+ * New error types can be defined here
+ */
 function showWarning(error){
     warning = document.getElementById("violation");
     switch (error){
