@@ -117,9 +117,16 @@ function analyseDOCX(){
     var outputLengthArray = new Array();
     var totalLength = 0;
     var firstHeading = false;
+    //Scores the tuple of JB score and 
+    var newScoreArr = 0.0;
+    var totalLength = 0.0;
+    scoreLengthArray = new Array();
+
     for (var i = 0; i < documentElements.length; i++){
         if((documentElements[i].nodeName != "H1")){
             var jjs = jabbourianJS(documentElements[i].innerText);
+            totalLength += jjs[2];
+            scoreLengthArray[i] = [jjs[1], jjs[2]];
             outputResult = outputResult + jjs[0] + "<br />";
             if (firstHeading == true){
                 outputErrorsArray[i] = jjs[1]; //JabbourScore of Paragraph
@@ -129,9 +136,31 @@ function analyseDOCX(){
         } else{
             outputResult = outputResult + "<br/>" + documentElements[i].innerText + "<br/><hr/>";
             firstHeading = true;
+            scoreLengthArray[i] = [0,0];
         }
     }
-    //New scoring system for .docx
+
+    for(let y = 0; y < documentElements.length; y++){
+        //console.log("Percentage " + (scoreLengthArray[y][1]/totalLength));
+        //console.log("Score " + scoreLengthArray[y][0]);
+        //console.log("To Add: " + scoreLengthArray[y][0] * (scoreLengthArray[y][1]/totalLength))
+        newScoreArr += scoreLengthArray[y][0] * (scoreLengthArray[y][1]/totalLength);
+    }
+
+    if (newScoreArr < 0){
+        newScoreArr = 0;
+    }
+    //Testing Code Start//
+    console.log("Score: ")
+    console.log(newScoreArr)
+
+    if(newScoreArr < 0){
+        newScoreArr = 0;
+    }
+    //Testing Code End//
+
+
+    /*/V0.9 scoring system for .docx IGNORE
     // Note, if result is NaN (Not a Number, it shouldnt count as this is most likely an empty para)
     outputErrors = 0;
     for (var i = 0; i < documentElements.length; i++){
@@ -146,12 +175,18 @@ function analyseDOCX(){
         }
     }
     ///outputErrors = (outputErrors * totalLength)/paragraphsCount;
+    IGNORE
+    */
+  
+  
+
     //Jabbourian Checker //
     //HTML DEPENDANT CODE//
+
     resultBox = document.getElementById("result")
     resultBox.innerHTML = outputResult;
     scoreBox = document.getElementById("score");
-    scoreBox.innerHTML = "This Document's JabbourScore: " + Math.round(outputErrors) + "/20";
+    scoreBox.innerHTML = "This Document's JabbourScore: " + Math.round(newScoreArr) + "/20";
     structureBox = document.getElementById("structureBox");
     if (headingArray[0] != true){
         structureBox.innerHTML = structureBox.innerHTML + "<div class= \"alert alert-danger\">This essay is missing an Executive Summary section</div>"
@@ -201,58 +236,96 @@ function jabbourianJS(text){
     cwsArray = new Array();
     noArray = new Array();
     quantArray = new Array();
+    /*Errors for each infraction*/
     errors = 0;
+    lyErrors = 0;
+    ingErrors = 0;
+    appostErrors = 0;
+    prepositionErrors= 0;
+    sentStartError = 0;
+    sweepingError = 0;
+    weakVerbError = 0;
+    cwsError = 0;
+    noError = 0;
+    quantError = 0;
+
     for(var i = 0; i < textArray.length; i++){
         if(textArray[i].match(/ly$/)){
             lyArray[i] = true;
+            lyErrors++;
             errors++;
         }
         else if(textArray[i].match(/ing$/)){
             ingArray[i] = true;
+            ingErrors++;
             errors++;
         }
         else if(textArray[i] == "'"){
             appostArray[i] = true;
+            appostErrors++;
             errors++;
         }
         else if(textArray[i] ==  "."){
             if(["about", "by", "during", "except", "from", "in", "into", "like", "minus", "near","of", "off", "on", "onto", "over", "past", "since", "than", "to", "under", "until", "upon", "with", "without"].indexOf(textArray[i-1]) > -1){
                 endPrepositionArray[i-1] = true;
+                prepositionErrors++;
                 errors++;
             };
             if(["and", "but", "or"].indexOf(textArray[i+2]) > -1){
                 sentanceStartArray[i+1] = true;
+                sentStartError++;
                 errors++;
             };
         }
         else if(["always", "never", "any", "every", "all", "none"].indexOf(textArray[i]) > -1){
             avoidSweepingArray[i] = true;
+            sweepingError++;
             errors++;
         }
-        else if(["be", "have", "can", "do"].indexOf(textArray[i]) > -1){
+        else if(["be", "have", "can", "do", "being"].indexOf(textArray[i]) > -1){
             weakVerbArray[i] = true;
+            weakVerbError++;
             errors++;
         }
         else if(["could", "would", "should"].indexOf(textArray[i]) > -1){
             cwsArray[i] = true;
+            cwsError++;
             errors++;
         }
         else if(["no"].indexOf(textArray[i]) > -1){
             noArray[i] = true;
+            noError++;
             errors++;
         }
         else if(["few", "some", "many", "most"].indexOf(textArray[i]) > -1){
             quantArray[i] = true;
+            quantError++;
             errors++;
         }   
     }
-    if(errors == 0){
+    /*
+    newScore = calculateJabScore(lyErrors, ingErrors, appostErrors, prepositionErrors, sentStartError, sweepingError, weakVerbError, cwsError, noError, quantError, text.length,textArray.length);
+
+    console.log("New Score: " + newScore)
+    */
+   /*
+    if(errors === 0){
         jabbourScore = 20;
     } else{
-        jabbourScore = Math.round(((1-((errors*21) / (textArray.length/2))) * 100)/5);
+        jabbourScore = Math.round(((1-((errors*17) / (textArray.length/2))) * 100)/5);
+
     }
     if (jabbourScore < 0){
         jabbourScore = 0;
+    }
+    
+    console.log("Old Score: " + jabbourScore)
+    console.log(text.length)
+    */
+    jabbourScore = calculateJabScore(lyErrors, ingErrors, appostErrors, prepositionErrors, sentStartError, sweepingError, weakVerbError, cwsError, noError, quantError, text.length,textArray.length);
+
+    if(errors === 0){
+        jabbourScore = 20;
     }
     resultOutput = "";
     for(var i = 0; i < textArray.length; i++){
@@ -293,8 +366,125 @@ function jabbourianJS(text){
             resultOutput = resultOutput + textArray[i];
         }
     }
-    return [resultOutput, jabbourScore, (textArray.length/2)];
+    return [resultOutput, jabbourScore, text.length];
 }
+
+function calculateJabScore(lyErrors, ingErrors, appostErrors, prepositionErrors, sentStartError, sweepingError, weakVerbError, cwsError, noError, quantError, length, numSents){
+    /*
+        Calculate the JS score using more percise method:
+            Allocate weights to each of the scores
+                
+                ly- 17
+                ing- 17
+                appost- .5 
+                prep- .5
+                sentStart- .5
+                sweeping- 1.5
+                weak verb- 2.0
+                cws error-.5
+                no Error-.5
+                quantError- 1.0
+
+    */
+    if(length === 0){
+        return 20;
+    }
+
+    severityScore = 10.5;
+
+    toReturn = 0.0;
+
+    //These are the weights of the errors. 
+    lyWeight = 1.5;
+    ingWeight = 1.5;
+    appostWeight = .5;
+    prepWeight = .5;
+    sentStartWeight = .5;
+    sweepingWeight = 2.5;
+    weakVerbWeight = 3.0;
+    cwsWeight = 1.5;
+    noWeight = .5;
+    quantWeight = 1.0;
+
+    //Error Cap- Max an error can deduct dependent on lenght. 
+    //You calculate avg number of sentences and then deduct how much 
+    avgWordsInSentence = 20.0;
+    //console.log(Math.ceil(length/avgWordsInSentence))
+
+    lyMax = .75 *  Math.ceil(length/avgWordsInSentence);
+    ingMax = 1.25 *  Math.ceil(length/avgWordsInSentence);
+    appostMax = 1 *  Math.ceil(length/avgWordsInSentence);
+    prepMax = 1 *  Math.ceil(length/avgWordsInSentence);
+    sentStartMax = 1 *  Math.ceil(length/avgWordsInSentence);
+    sweepingMax = 1.5 *  Math.ceil(length/avgWordsInSentence);
+    weakVerbMax = 2.5 *  Math.ceil(length/avgWordsInSentence); //Math.round(length/avgWordsInSentence) is expected number of sentences
+    cwsMax = .5 *  Math.ceil(length/avgWordsInSentence);
+    noMax = 1 *  Math.ceil(length/avgWordsInSentence);
+    quantMax = 1.0 *  Math.ceil(length/avgWordsInSentence);
+
+    if((lyErrors * lyWeight) > lyMax ){
+        toReturn += lyMax;
+    } else {
+        toReturn += (lyErrors * lyWeight);
+    }
+
+    if((ingErrors * ingWeight) > ingMax ){
+        toReturn += ingMax;
+    } else {
+        toReturn += (ingErrors * ingWeight);
+    }
+
+    if((appostErrors * appostWeight) > appostMax ){
+        toReturn += appostMax;
+    } else {
+        toReturn += (appostErrors * appostWeight);
+    }
+
+    if((prepositionErrors * prepWeight) > prepMax ){
+        toReturn += prepMax;
+    } else {
+        toReturn += (prepositionErrors * prepWeight);
+    }
+
+    if((sentStartError * sentStartWeight) > sentStartMax ){
+        toReturn += sentStartMax;
+    } else {
+        toReturn += (sentStartError * sentStartWeight);
+    }
+
+    if((sweepingError * sweepingWeight) > sweepingMax ){
+        toReturn += sweepingMax;
+    } else {
+        toReturn += (sweepingError * sweepingWeight);
+    }
+
+    if((weakVerbError * weakVerbWeight) > weakVerbMax ){
+        toReturn += weakVerbMax;
+    } else {
+        toReturn += (weakVerbError * weakVerbWeight);
+    }
+
+    if((cwsError * cwsWeight) > cwsMax ){
+        toReturn += cwsMax;
+    } else {
+        toReturn += (cwsError * cwsWeight);
+    }
+
+    if((noError * noWeight) > noMax ){
+        toReturn += noMax;
+    } else {
+        toReturn += (noError * noWeight);
+    }
+
+    if((quantError * quantWeight) > quantMax){
+        toReturn += quantMax;
+    } else {
+        toReturn += (quantError * quantWeight);
+    }
+    toReturn = Math.round(((1-((toReturn*severityScore) / (numSents/2))) * 100)/5);
+
+    return toReturn
+} 
 
 
 /**
