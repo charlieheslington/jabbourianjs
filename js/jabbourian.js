@@ -131,7 +131,6 @@ function analyseDOCX(){
             if (firstHeading == true){
                 outputErrorsArray[i] = jjs[1]; //JabbourScore of Paragraph
                 outputLengthArray[i] = jjs[2]; // Length of Paragraph
-                totalLength = totalLength + jjs[2];
             }
         } else{
             outputResult = outputResult + "<br/>" + documentElements[i].innerText + "<br/><hr/>";
