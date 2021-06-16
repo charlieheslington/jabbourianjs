@@ -281,7 +281,7 @@ function jabbourianJS(text){
             sweepingError++;
             errors++;
         }
-        else if(["be", "have", "can", "do", "being"].indexOf(textArray[i]) > -1){
+        else if(["be", "have", "can", "do", "being", "is", "was", "are"].indexOf(textArray[i]) > -1){
             weakVerbArray[i] = true;
             weakVerbError++;
             errors++;
@@ -514,7 +514,7 @@ function showWarning(error){
             warning.innerHTML = "Avoid statements with sweeping categorical adverbs like 'always', 'never', 'any', 'every', 'all' and 'none'.They may undermine the credibility of an entire report if a reader can disprove one of them";
             break;
         case 7:
-            warning.innerHTML = "Avoid weak verbs 'be', 'have', 'can, or 'do'. Use verbs that describestate and action";
+            warning.innerHTML = "Avoid weak verbs 'be', 'have', 'can, or 'do' or passive voice. Use verbs that describestate and action";
             break;
         case 8:
             warning.innerHTML = "Do not use 'could', 'would', or 'should' .Use 'must' or 'shall' to describe a requirement";
